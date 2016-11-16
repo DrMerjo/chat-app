@@ -15,27 +15,59 @@ var io = socketIO(server);
 app.use(express.static(publicPath));
 
 
+
 // doing something on server side by user when connecting to the server
 io.on('connection', (socket) => {
   console.log('New user connected');
 
-  // emit new data from the server to the user
+  // greeting the new user when joing the chat
   socket.emit('newMessage', {
-    from: 'Lors',
-    message: 'Wassalam!',
-    createdAt: 123
+    from: 'Admin',
+    text: 'Welcome to the chat app',
+    createdAt: new Date().getTime()
   });
+
+  // New user joinded chat app message
+  socket.broadcast.emit('newMessage', {
+    from: 'Admin',
+    text: 'New user joined',
+    createdAt: new Date().getTime()
+  });
+
+  // // emit new data from the server to the user
+  // socket.emit('newMessage', {
+  //   from: 'Lors',
+  //   text: 'Wassalam!',
+  //   createdAt: 123
+  // });
 
   // receiving data from user to server
   socket.on('newMessage', (message) => {
     console.log('Message: ', message);
+
+    // sending message to all chat participants, including the sender
+    oi.emit('newMessage', {
+      from: message.from,
+      text: message.text,
+      createdAt: new Date().getTime()
+    });
   });
+
+  // // sending message to all chat participants, except the sender
+  // oi.broadcast.emit('newMessage', {
+  //   from: message.from,
+  //   text: message.text,
+  //   createdAt: new Date().getTime()
+  // });
 
   // doing something on client side by user when disconnecting to the server
   socket.on('disconnect', () => {
     console.log('User was disconnected');
   });
 });
+
+
+
 
 // to launch the localhost:3000
 server.listen(port, () => {
