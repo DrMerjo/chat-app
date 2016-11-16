@@ -14,9 +14,22 @@ var io = socketIO(server);
 //going to public folder
 app.use(express.static(publicPath));
 
+
 // doing something on server side by user when connecting to the server
 io.on('connection', (socket) => {
   console.log('New user connected');
+
+  // emit new data from the server to the user
+  socket.emit('newMessage', {
+    from: 'Lors',
+    message: 'Wassalam!',
+    createdAt: 123
+  });
+
+  // receiving data from user to server
+  socket.on('newMessage', (message) => {
+    console.log('Message: ', message);
+  });
 
   // doing something on client side by user when disconnecting to the server
   socket.on('disconnect', () => {
