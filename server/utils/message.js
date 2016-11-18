@@ -1,9 +1,9 @@
-var generateMessage = (text, from) => {
+var generateMessage = (from, text) => {
   return {
-    text,
     from,
+    text,
     createdAt: new Date().getTime()
   };
 };
 
-module.exports = {generateMessage}; 
+module.exports = {generateMessage};

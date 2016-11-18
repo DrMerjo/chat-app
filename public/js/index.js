@@ -19,7 +19,12 @@ socket.on('disconnect', function () {
 
 // catching data from the server of event 'newMessage'
 socket.on('newMessage', function (message) {
-   console.log('New email', message);
+   //console.log('New email', message);
+   //cattch the message sent from server
+   var li = jQuery('<li></li>');
+   li.text(`${message.from}: ${message.text}`);
+   // display message on browser
+   jQuery('#messages').append(li)
 });
 
 socket.emit("createMessage", {
@@ -27,4 +32,15 @@ socket.emit("createMessage", {
   text: 'Salam'
 }, function (data) {
   console.log('Got it.', data)
+});
+
+jQuery('#message-form').on('submit', function (e) {
+  e.preventDefault(); // the default url won't change when entering the text
+
+  socket.emit('createMessage', {
+    from: 'User',
+    text: jQuery('[name=message]').val()
+  }, function () {
+
+  });
 });
