@@ -4,7 +4,7 @@ const express = require('express');
 const socketIO = require('socket.io');
 
 
-const {generateMessage} = require('./utils/message.js');
+const {generateMessage, generateLocationMessage} = require('./utils/message.js');
 const publicPath = path.join(__dirname, '../public');
 // browser ports: server or local
 const port = process.env.PORT || 3000;
@@ -25,6 +25,7 @@ io.on('connection', (socket) => {
   // greeting the new user when joing the chat
   socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
 
+
   // New user joinded chat app message
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
 
@@ -35,14 +36,13 @@ io.on('connection', (socket) => {
     // sending message to all chat participants, including the sender
     io.emit('newMessage', generateMessage(message.from, message.text));
 
-    callback('Data sent to the server');
+    callback();
+  });
 
-    // // emit new data from the server to the user
-    // socket.emit('newMessage', {
-    //   from: 'Lors',
-    //   text: 'Wassalam!',
-    //   createdAt: 123
-    // });
+
+  //receiving geolocation from browser to server
+  socket.on('createLocationMessage', (coords) => {
+    io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude,coords.longitude));
   });
 
   // // sending message to all chat participants, except the sender
@@ -56,6 +56,7 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('User was disconnected');
   });
+
 });
 
 
